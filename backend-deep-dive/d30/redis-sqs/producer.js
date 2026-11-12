@@ -1,8 +1,10 @@
-const express = require('express');
-const { createClient } = require('redis');
+import express from 'express';
+import { createClient } from 'redis';
 const app = express();
 const port = 3000;
 const client = createClient();
+app.use(express.json());
+
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -11,13 +13,15 @@ app.get('/', (req, res) => {
 
 //message structure
 
-{
- message:"example"
-}
+// {
+//  message:"example"
+// }
 
 app.post('/addToRedis', async (req, res) => {
     console.log(req);
+    if (!client.isOpen) {
     await client.connect();
+    }
     await client.set('message', req.body.message);
     await client.disconnect();
 
